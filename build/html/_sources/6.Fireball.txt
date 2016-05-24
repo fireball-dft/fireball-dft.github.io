@@ -1,0 +1,23 @@
+Driver: Fireball
+================
+
+The driver _Fireball_ is composed of two executables ``fireball.x`` and
+``fireball-MDET.x``.
+The purpose of the driver is to compute the electronic structure from the
+precomputed interactions and wavefunctions.
+The driver works with the wave-functions created by the driver Begin and the
+interactions created by the driver Create.
+The interactions are stored in the Fdata directory (old style) or the new HDF5
+Fdata.hdf (new style).
+
+Installation
+------------
+
+Usage
+-----
+
+Tutorials
+---------
+
+Technical information
+---------------------

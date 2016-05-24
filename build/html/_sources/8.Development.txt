@@ -1,0 +1,20 @@
+8. Development
+==============
+
+This chapter describes the procedures for those willing to contribute to the
+project.
+
+Repositories
+------------
+
+Continuos Integration
+---------------------
+
+Test driven development
+-----------------------
+
+Code Coverage
+-------------
+
+Performance
+-----------

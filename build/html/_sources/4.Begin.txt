@@ -1,0 +1,19 @@
+Driver: Begin
+=============
+
+The driver _Begin_ is compose of two executables ``begin.x`` and ``begin-looprc``.
+The purpose of the driver is to compute the atomic wave-functions that will be
+used by the driver Create to compute the interatomic interactions and by the
+driver Fireball to compute the electronic structure.
+
+Installation
+------------
+
+Usage
+-----
+
+Tutorials
+---------
+
+Technical information
+---------------------

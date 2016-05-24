@@ -1,0 +1,18 @@
+Driver: Lightning
+=================
+
+The driver _Lightning_ is composed of two executables ``lightning.x`` and
+``lightning-grid.x``.
+The purpose of the driver is ...
+
+Installation
+------------
+
+Usage
+-----
+
+Tutorials
+---------
+
+Technical information
+---------------------
