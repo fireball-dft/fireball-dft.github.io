@@ -14,7 +14,7 @@ The other repositories contain just the source code that is exclusive for the
 use of the driver that contains the repository.
 
 When you want to work or develop for the ``Fireball`` driver you need to clone
-at least two repositories: fireball-master and fireball-fireball
+at least two repositories: fireball-master and fireball-fireball::
 
    git clone git@github.com:fireball-dft/fireball-fireball
    git clone git@github.com:fireball-dft/fireball-master
