@@ -89,6 +89,19 @@
 <li class="toctree-l1"><a class="reference internal" href="2.Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3.QuickStart.html">Quick Start</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Driver: Begin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-begin-module">Running the BEGIN Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#some-notes-about-exchange-correlation">5.0 Some notes about exchange-correlation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-executables">5.1 Building the executables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-started-setting-up-the-sub-directories-and-pseudo-potential-files">5.2 Getting started - setting up the sub-directories and pseudo-potential files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finding-the-cutoffs-begin-looprc-x">5.3    Finding the cutoffs - begin-looprc.x</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calculating-the-wave-functions-begin-x">5.4 Calculating the wave-functions - begin.x</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#excited-states-and-polarization-states">5.5 Excited states and polarization states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimized-wave-functions">5.6 Optimized wave-functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plotting-the-results">5.7 Plotting the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tutorials">Tutorials</a></li>
@@ -151,235 +164,258 @@
 \[\left(-\frac{\hbar}{2m}\nabla^2 + V_{ext}(\mathbf{r}) + \mu_{xc}[\rho_{in}(\mathbf{r})] + \frac{e^2}{2}\int \frac{\rho_{in}(r)}{|\mathbf{r}-\mathbf{r}'|} d^3r' \right) \psi_i(\mathbf{r}) = \epsilon_i \psi_i(\mathbf{r})\]</div>
 <p>a set of slightly excited pseudo-atomic fireball wave-functions are computed within density-functional theory (using either the local-density approximation or generalized gradient corrections) and a norm-conserving separable pseudo-potential <a class="footnote-reference" href="#id14" id="id2">[2]</a> and are chosen such that they smoothly vanish at the cutoff radius.</p>
 <p>This cutoff boundary condition is equivalent to an atom in the box and has the effect of raising the electronic energy levels (i.e., the atomic eigenvalues) due to atom confinement (e.g. Fermi compression of the atom). The radial cutoffs are chosen such that the electronic energy levels remain negative (bound states) and are mildly perturbed from the free atom, and given excitation energies are used to determine the radial cutoffs. Typically, the excitation energy of choice is 0.15 Ryd above the energy of the free-atom. However, for molecules or systems where longer-ranged interactions should be considered, then an excitation choice of 0.10 Ryd is better.</p>
-<p>Figure 1 shows a comparison between fireball wave-functions and free-atomic wave-functions (s- and d-state for Au). It is very important that the radial cutoffs are chosen to preserve the chemical trends of the atoms; the excitation of the atoms must be done in a manner that preserves the relative ionization energies and relative atomic sizes. A theoretical basis for judiciously choosing the the radial cutoffs is  discussed in Ref. <a class="footnote-reference" href="#id15" id="id3">[3]</a>. For this example of the two Au valence states, an excitation energy of  ~ 2.0eV  (or 0.15 Ryd) yields the following radial cutoffs rc5d = 4.7 aB and rc6s = 5.0 aB. Note, that for the Au d-state, there is not a noticeable distinction between the exact wavefunction and the wavefunction with rc5d = 4.7 aB (d-states are more contracted).</p>
-<p>Au (fireball wavefunctions vs. atomic wavefunctions)
-Figure 1.  The slightly excited pseudoatomic orbitals for the d-state and s-state of Au (solid line: free-atomic wavefunction, dashed line: fireball wavefunctions).</p>
-<p>The fireball boundary condition yields two promising features that enable computationally efficient calculations. First, the range of hopping matrix elements between orbitals on different atoms is limited; therefore, very sparse matrices are created for large systems. This inherent sparseness allows one to more readily implement linear-scaling algorithms to obtain the band structure energy. Second, the slight excitation of the atoms somewhat accounts for Fermi compression in solids which present a better representation of solid-state charge densities <a class="footnote-reference" href="#id15" id="id4">[3]</a>.</p>
-<p>A flexible choice of basis set where double numerical or additional polarization sets are permitted within FIREBALL. Earlier work shows that the addition of the double numerical basis set yields comparable results to other ab initio tight-binding methods given in Refs. <a class="footnote-reference" href="#id16" id="id5">[4]</a> and <a class="footnote-reference" href="#id17" id="id6">[5]</a>.</p>
+<p>Figure 1 shows a comparison between fireball wave-functions and free-atomic wave-functions (s- and d-state for Au). It is very important that the radial cutoffs are chosen to preserve the chemical trends of the atoms; the excitation of the atoms must be done in a manner that preserves the relative ionization energies and relative atomic sizes. A theoretical basis for judiciously choosing the the radial cutoffs is  discussed in Ref. <a class="footnote-reference" href="#id15" id="id3">[3]</a> . For this example of the two Au valence states, an excitation energy of  ~ 2.0eV  (or 0.15 Ryd) yields the following radial cutoffs rc5d = 4.7 aB and rc6s = 5.0 aB. Note, that for the Au d-state, there is not a noticeable distinction between the exact wavefunction and the wavefunction with rc5d = 4.7 aB (d-states are more contracted).</p>
+<div class="align-center figure" id="id24">
+<img alt="Au (fireball wavefunctions vs. atomic wavefunctions)" src="_images/AuWaveFunctions.png" />
+<p class="caption"><span class="caption-text">Figure 1.  The slightly excited pseudoatomic orbitals for the d-state and
+s-state of Au (solid line: free-atomic wavefunction, dashed line:
+fireball wavefunctions).</span></p>
+</div>
+<p>The fireball boundary condition yields two promising features that enable computationally efficient calculations. First, the range of hopping matrix elements between orbitals on different atoms is limited; therefore, very sparse matrices are created for large systems. This inherent sparseness allows one to more readily implement linear-scaling algorithms to obtain the band structure energy. Second, the slight excitation of the atoms somewhat accounts for Fermi compression in solids which present a better representation of solid-state charge densities <a class="footnote-reference" href="#id15" id="id4">[3]</a> .</p>
+<p>A flexible choice of basis set where double numerical or additional polarization sets are permitted within FIREBALL. Earlier work shows that the addition of the double numerical basis set yields comparable results to other ab initio tight-binding methods given in Refs. <a class="footnote-reference" href="#id16" id="id5">[4]</a> and <a class="footnote-reference" href="#id17" id="id6">[5]</a> .</p>
 <p>In addition to the wave-functions, the BEGIN module creates the neutral atom and charged atom potentials (i.e., Hartree interactions). The neutral atom potential is determined from</p>
+<div class="math">
+\[V_{NA} = V_{ion+} \int \frac{n_s |\Phi_s|^2 + n_p |\Phi_p|^2 + \cdots}{|r-r'|}\]</div>
 <p>The charged atom potential is based on the wavefunction of the shell, so the piece for the s-shell is determined by</p>
-<p>These Hartree potentials are required for calculating Coulombic matrix elements in the CREATE module.
-5 Running the BEGIN Module
-5.0   Some notes about exchange-correlation</p>
+<div class="math">
+\[V^s = \int \frac{|\Phi_s|^2}{|r-r'|}\]</div>
+<p>These Hartree potentials are required for calculating Coulombic matrix elements in the CREATE module.</p>
+<div class="section" id="running-the-begin-module">
+<h2>Running the BEGIN Module<a class="headerlink" href="#running-the-begin-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="some-notes-about-exchange-correlation">
+<h3>5.0 Some notes about exchange-correlation<a class="headerlink" href="#some-notes-about-exchange-correlation" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="9%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" colspan="3">Enumeration of exchange-correlation approximations.</th>
+</tr>
+<tr class="row-even"><th class="head">Number</th>
+<th class="head">Limit</th>
+<th class="head">Exchange-Correlation Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td>1</td>
+<td>LDA</td>
+<td>Wigner</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>LDA</td>
+<td>Hedin/Lundqvist</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>LDA</td>
+<td>Ceperley/Alder Perdew/Zunger (1980)</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>GGA</td>
+<td>Perdew/Wang (1991)</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>GGA</td>
+<td>Becke (1988) X, Perdew (1986)</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>GGA</td>
+<td>Perdew/Burke/Ernzerhof (1996)</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>LDA</td>
+<td>Zhao/Parr</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>LDA</td>
+<td>Ceperley/Alder Perdew/Wang (1991)</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>GGA</td>
+<td>Becke (1988) X, Lee/Yang/Parr (1988)</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>GGA</td>
+<td>Perdew/Wang (1991) X, Lee/Yang/Parr (1988)</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>LSDA</td>
+<td>Volko/Wilk/Nusair (1980)</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>B3LYP</td>
+<td>BLYP (9 GGA) with exact exchange</td>
+</tr>
+</tbody>
+</table>
 <p>Table 1↓ lists the different exchange-correlation options; note that only option &#8216;3&#8217; and option &#8216;9&#8217; are currently programmed within the FIREBALL suite of codes.
-Table 1 Enumeration of exchange-correlation approximations.
-Number  Limit   Exchange-Correlation Type
-1       LDA     Wigner
-2       LDA     Hedin/Lundqvist
-3       LDA     Ceperley/Alder Perdew/Zunger (1980)
-4       GGA     Perdew/Wang (1991)
-5       GGA     Becke (1988) X, Perdew (1986)
-6       GGA     Perdew/Burke/Ernzerhof (1996)
-7       LDA     Zhao/Parr
-8       LDA     Ceperley/Alder Perdew/Wang (1991)
-9       GGA     Becke (1988) X, Lee/Yang/Parr (1988)
-10      GGA     Perdew/Wang (1991) X, Lee/Yang/Parr (1988)
-11      LSDA    Volko/Wilk/Nusair (1980)
-12      B3LYP   BLYP (9 GGA) with exact exchange
-5.1 Building the executables</p>
+Table 1</p>
+</div>
+<div class="section" id="building-the-executables">
+<h3>5.1 Building the executables<a class="headerlink" href="#building-the-executables" title="Permalink to this headline">¶</a></h3>
 <p>All packages are stored in the svn repository.</p>
 <p>First, checkout /fireball-thunder and /fireball-begin from the svn repository at <a class="reference external" href="https://fireball.phys.wvu.edu/svn/THUNDER">https://fireball.phys.wvu.edu/svn/THUNDER</a> (you will need a user account on our server to download).</p>
 <p>Note that all the modules for running the new suite of FIREBALL codes are found in /fireball-thunder/src. Generally, only the drivers are found in other sub-directories and symbolic links are made to /fireball-thunder/src sub-directories. This strategy is chosen so that all FIREBALL codes will now utilize common modules throughout future versions.</p>
 <p>You will then need to go to /fireball-begin/src and type ./runme_before_compile.sh. Note that there is a single common Makefile for creating all FIREBALL codes. Check this Makefile before creating any executables. For example, make sure that the correct MACHINE file is chosen in the Makefile (you may need to build your own MACHINE file). Also, in the Makefile - choose the correct XC (exchange-correlation) flag (currently the two flags available are XC = LDA for exchange-correlation option 3 and and XC = BLYP for exchange-correlation option 9).</p>
 <p>Once these steps are finished you are ready to make the executables that are necessary for running fireball-begin: begin.x and begin-looprc.x. To make these, type make begin.x and make begin-looprc.x to create the executables.</p>
-<p>Before running begin.x and begin-looprc.x, there are two important components that must be added: the pseudo-potential files and the input files. These need to be added to specific sub-directories.
-5.2 Getting started - setting up the sub-directories and pseudo-potential files</p>
+<p>Before running begin.x and begin-looprc.x, there are two important components that must be added: the pseudo-potential files and the input files. These need to be added to specific sub-directories.</p>
+</div>
+<div class="section" id="getting-started-setting-up-the-sub-directories-and-pseudo-potential-files">
+<h3>5.2 Getting started - setting up the sub-directories and pseudo-potential files<a class="headerlink" href="#getting-started-setting-up-the-sub-directories-and-pseudo-potential-files" title="Permalink to this headline">¶</a></h3>
 <p>First we will set up the directories for the pseudo-potentials and input files.</p>
 <p>For setting up the directories, the following guidelines are followed. First, make a sub-directory name of the element under /fireball-begin, i.e., /N for nitrogen (assuming that a sub-directory does not yet exist). Second, make a sub-sub-directory with a number signifying which exchange-correlation option is used and which valences are used for the pseudo-potentials. Hence, /fireball-begin/N/3.s2p3.p1p2 signifies that we are generating wave-functions for nitrogen, using LDA option &#8216;3&#8217;, the first pseudo-potential has a valence of 2 and 3 in the s- and p-states, respectively, and, in this case, we use valence states of 1 and 2 for the s- and p-states, respectively, for the second, excited-state, pseudo-potential. Note, in principle, the pseudo-potentials are transferable and the 007.s2p3.pp can be used for both ground- and excited-states; however, we generally choose to utilize the excited-state pseudo-potential to generate the excited state wave-functions for convenience (more on this later).</p>
 <p>Psuedo-potential files: Next, create the sub-directory /fireball-begin/N/3.s2p3.p1p2/Fdata/basis. For convenience with using all FIREBALL codes, all pseudo-potentials are stored in the input sub-directory /Fdata/basis and all wave-functions are output to the same sub-directory. Many pseudo-potentials have already been created and are found in the PPfiles sub-directories under /fireball-begin, e.g. /fireball-begin/N/Ppfiles. For example, for nitrogen - there exist the sub-directory /fireball-begin/N and there are the following sub-directories: /3.s2p3.p1p2, /9.s2p3.s1p2, and /Ppfiles. The nomenclature for the naming scheme of the psuedo-potential files is in the form Z.snpm.pp, where Z is the atomic number (e.g., 014 for Si) and the numbers n and m signify the occupation valence for the s- and p- states respectively (for example, the pseudo-potential for nitrogen using LDA, option &#8216;3&#8217;, is stored in /fireball-begin/N/PPfiles/3/007.s2p3.pp). Note that the sub-directories under /PPfiles signify the type of exchange-correlation interaction used as specified by the pseudo-potential package, so that, option &#8216;3’ signifies the local-density approximation of the Ceperley-Alder form <a class="footnote-reference" href="#id18" id="id7">[6]</a> as parameterized by Perdew and Zunger <a class="footnote-reference" href="#id19" id="id8">[7]</a>, option ’9’ signifies Becke exchange <a class="footnote-reference" href="#id20" id="id9">[8]</a> with Lee-Yang-Parr correlation <a class="footnote-reference" href="#id21" id="id10">[9]</a>, etc. Also note that the next module of the FIREBALL package, CREATE, will run with only LDA option &#8216;3&#8217;, or the GGA-BLYP option, e.g., option &#8216;9&#8217;, for the exchange-correlation interactions. Currently, the other exchange-correlation options are not available in the FIREBALL code. More details about the contents of these sub-directories will become obvious later after thoroughly reading this tutorial. Additionally, wave-functions and pseudo-potentials can also be downloaded on this webpage (coming soon). If the necessary pseudo-potential does not exist, then run the PP package to generate the needed pseudo-potential file.</p>
-<p>Hence, copy the files /fireball-begin/N/PPfiles/3/007.s2p3.pp and /fireball-begin/N/PPfiles/3/007.s1p2.pp to /Fdata/basis/007.pp and /Fdata/basis/007++.pp. The executables begin.x and begin-looprc.x are expecting the two pseudo-potential files to be stored in default names 007.pp and 007++.pp. Note that the &#8216;++&#8217; generally signifies that the excited state wave-functions are generated from the 2+ ion; however, in some cases, a different ion is used or the ground-state pseudo-potential can be used to generate the excited states. Regardless, the pseudo-potential used to generate the excited states is still stored in the file Z++.pp.
-5.3    Finding the cutoffs - begin-looprc.x</p>
+<p>Hence, copy the files /fireball-begin/N/PPfiles/3/007.s2p3.pp and /fireball-begin/N/PPfiles/3/007.s1p2.pp to /Fdata/basis/007.pp and /Fdata/basis/007++.pp. The executables begin.x and begin-looprc.x are expecting the two pseudo-potential files to be stored in default names 007.pp and 007++.pp. Note that the &#8216;++&#8217; generally signifies that the excited state wave-functions are generated from the 2+ ion; however, in some cases, a different ion is used or the ground-state pseudo-potential can be used to generate the excited states. Regardless, the pseudo-potential used to generate the excited states is still stored in the file Z++.pp.</p>
+</div>
+<div class="section" id="finding-the-cutoffs-begin-looprc-x">
+<h3>5.3    Finding the cutoffs - begin-looprc.x<a class="headerlink" href="#finding-the-cutoffs-begin-looprc-x" title="Permalink to this headline">¶</a></h3>
 <p>The first step towards generating fireball wave-functions is to determine the necessary cutoffs. Typically, the cutoffs should be chosen such that the energy of the new fireball pseudo-atomic orbital is 0.15 Ry above the energy of the free-atom (the infinite cutoff case). This has been historically determined to be the criteria of choice, because the cutoffs given by this excitation energy provide enough neighbor interactions in the Hamiltonian to produce a sufficiently accurate cohesive energy in bulk materials (in Si the error is 10 − 5 compared to the cohesive energy calculated with infinite cutoffs). In hydrogen-bonded systems it is advisable to decrease the criteria for the excitation energy to 0.10 Ry. With this latter criteria, the cutoffs in general will be about 10% longer and the fireball wave-functions should be extended about 10% longer for hydrogen-bonded systems.</p>
 <p>The program begin-looprc.x will loop through different cutoffs so that the ideal cutoffs for the fireball wave-functions may be determined.</p>
 <p>Before we can run begin-looprc.x three files need to be created: Fdata.inp, looprc.inp, and Z-looprc.inp (where Z is the atomic symbol). The template for each of these files are as follows,</p>
-<p>Fdata.inp
-1       ! Number of species
-7       ! Atomic number (list line by line according to number of species)
-Fdata   ! Location of the Fdata input/output (generally symbolically linked to /Fdata)</p>
-<p>looprc.inp
-James P. Lewis  ! Name of the person running begin-looprc.x
-N-looprc.inp    ! Name of the input file for the species (list line by line; number of species)</p>
+<p>Fdata.inp</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>1          ! Number of species
+7          ! Atomic number (list line by line according to number of species)
+Fdata      ! Location of the Fdata input/output (generally symbolically linked to /Fdata)
+</pre></div>
+</div>
+<p>looprc.inp</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>James P. Lewis  ! Name of the person running begin-looprc.x
+N-looprc.inp    ! Name of the input file for the species (list line by line; number of species)
+</pre></div>
+</div>
 <p>So, in principle, begin-looprc.x can be run for more than one species.  To run for multiple species, merely change the number in the Fdata.inp file and add the appropriate pseudo-potential files to /Fdata/basis. If multiple species are calculated, then make a Z-looprc.inp for each species, as follows:</p>
-<p>N-looprc.inp
-Nitrogen        ! atom name
-N       ! atom symbol
-7       ! atomic number
-14.007  ! atomic mass
-5.0</p>
-<blockquote>
-<div>! number of valence electrons</div></blockquote>
-<dl class="docutils">
-<dt>3</dt>
-<dd>! exchange-correlation option</dd>
-</dl>
-<p>2       ! number of shells
-0</p>
-<blockquote>
-<div>! angular momentum of shell 1</div></blockquote>
-<dl class="docutils">
-<dt>2.0</dt>
-<dd>! number of electrons in shell 1</dd>
-</dl>
-<p>1       ! angular momentum of shell 2
-3.0     ! number of electrons in shell 2
-3.0     ! initial radial cutoff
-8.0     ! final cutoff
-12.0    ! infinity radial cutoff - to get free atom eigenvalues</p>
+<p>N-looprc.inp</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Nitrogen     ! atom name
+N            ! atom symbol
+7            ! atomic number
+14.007       ! atomic mass
+5.0          ! number of valence electrons
+3            ! exchange-correlation option
+2            ! number of shells
+0            ! angular momentum of shell 1
+2.0          ! number of electrons in shell 1
+1            ! angular momentum of shell 2
+3.0          ! number of electrons in shell 2
+3.0          ! initial radial cutoff
+8.0          ! final cutoff
+12.0         ! infinity radial cutoff - to get free atom eigenvalues
+</pre></div>
+</div>
 <p>Note that as a general rule when running begin-looprc.x and begin.x for transition metals: The p-state is included even though the p-state is empty for transition metals. So for instance, a Z-looprc.inp file for a transition metal might look something like.</p>
-<p>Au-looprc.inp
-Gold    ! atom name
-Au      ! atom symbol
-79      ! atomic number
-196.967 ! atomic mass
-11.0</p>
-<blockquote>
-<div>! number of valence electrons</div></blockquote>
-<dl class="docutils">
-<dt>3</dt>
-<dd>! exchange-correlation option</dd>
-</dl>
-<p>3       ! number of shells
-0</p>
-<blockquote>
-<div>! angular momentum of shell 1</div></blockquote>
-<dl class="docutils">
-<dt>1.0</dt>
-<dd>! number of electrons in shell 1</dd>
-</dl>
-<p>1       ! angular momentum of shell 2
-0.0     ! number of electrons in shell 2
-2</p>
-<blockquote>
-<div>! angular momentum of shell 3</div></blockquote>
-<p>10.0    ! number of electrons in shell 3
-3.0     ! initial radial cutoff
-8.0     ! final cutoff
-12.0    ! infinity radial cutoff - to get free atom eigenvalues</p>
+<p>Au-looprc.inp</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Gold          ! atom name
+Au            ! atom symbol
+79            ! atomic number
+196.967       ! atomic mass
+11.0          ! number of valence electrons
+3             ! exchange-correlation option
+3             ! number of shells
+0             ! angular momentum of shell 1
+1.0           ! number of electrons in shell 1
+1             ! angular momentum of shell 2
+0.0           ! number of electrons in shell 2
+2             ! angular momentum of shell 3
+10.0          ! number of electrons in shell 3
+3.0           ! initial radial cutoff
+8.0           ! final cutoff
+12.0          ! infinity radial cutoff - to get free atom eigenvalues
+</pre></div>
+</div>
 <p>Note that for transition metal atoms, we typically keep the empty p-state at all stages for polarization.</p>
 <p>With these files in the directory, run the program (type ./begin-looprc.x) and follow the instructions and answer the questions given by the execution of the code. Note that the necessary pseudo-potential file must be available in the running directory or begin-looprc.x will crash.</p>
 <p>The output of begin-looprc.x will be written to an output.log file and a Z.eig file, where Z indicates the atomic number of the atom (e.g. for N, the file name would be 007.eig). The output.log file is merely the &#8220;screen&#8221; output from the program. Table 2 shows an example of the the type of information found in the 007.eig file. Listed for each shell, the output contained in the Z.eig file are (in order) the cutoff, the energy eigenvalue for that cutoff, and the energy difference (delta) between the energy eigenvalues of the free atom and the fireball atom. The information is listed in order of shell (for flexibility, different cutoffs are presumed for each shell).</p>
 <p>Table 2 An example of the type of information found
 in file 007.eig after running the looprc.x program.</p>
-<blockquote>
-<div><blockquote>
-<div><p>SHELL 1</p>
-<p>SHELL 2</p>
-</div></blockquote>
-<p>rc      eigen   delta                   rc      eigen   delta</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>3.000   -0.88595        0.46830         |</dt>
-<dd>3.000   0.00654         0.53901</dd>
-<dt>3.000   -0.89954        0.45472         |       3.050</dt>
-<dd>-0.02004        0.51243</dd>
-<dt>⋮       ⋮       ⋮       |</dt>
-<dd><blockquote class="first">
-<div>⋮       ⋮       ⋮</div></blockquote>
-<p class="last">3.650   -1.20093        0.15332                 4.050   -0.37279        0.15968
-3.650   -1.20604        0.14822                 4.100   -0.38007        0.15240
-3.650   -1.21092        0.14333                 4.150   -0.38696        0.14551</p>
-</dd>
-<dt>⋮        ⋮      ⋮       |</dt>
-<dd>⋮       ⋮       ⋮</dd>
-<dt>3.750   -1.25210        0.10215         |</dt>
-<dd>4.500   -0.43514        0.09733</dd>
-<dt>3.800   -1.18590        0.16835         |</dt>
-<dd><blockquote class="first">
-<div>3.800
--0.33801        0.19446</div></blockquote>
-<dl class="last docutils">
-<dt>⋮       ⋮       ⋮      |</dt>
-<dd>⋮       ⋮       ⋮</dd>
-</dl>
-</dd>
-<dt>4.850   -1.33066        0.02360         |</dt>
-<dd>5.600   -0.50832        0.02415</dd>
-<dt>4.900   -1.30853        0.04573         |</dt>
-<dd>4.900   -0.48121        0.05126</dd>
-</dl>
-<p>⋮       ⋮       ⋮       |       ⋮       ⋮
-⋮</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>SHELL 1                          SHELL 2
+
+rc   eigen   delta               rc   eigen   delta
+3.000   -0.88595   0.46830   |   3.000   0.00654   0.53901
+3.000   -0.89954   0.45472   |   3.050 -0.02004   0.51243
+  ⋮   ⋮   ⋮   |   ⋮   ⋮   ⋮
+3.650   -1.20093   0.15332       4.050   -0.37279   0.15968
+3.650   -1.20604   0.14822       4.100   -0.38007   0.15240
+3.650   -1.21092   0.14333       4.150   -0.38696   0.14551
+  ⋮   ⋮  ⋮    |   ⋮   ⋮   ⋮
+3.750   -1.25210   0.10215   |   4.500   -0.43514   0.09733
+3.800   -1.18590   0.16835   |   3.800   -0.33801   0.19446
+  ⋮   ⋮   ⋮   |   ⋮   ⋮   ⋮
+4.850   -1.33066   0.02360   |   5.600   -0.50832   0.02415
+4.900   -1.30853   0.04573   |   4.900   -0.48121   0.05126
+  ⋮   ⋮   ⋮   |   ⋮   ⋮   ⋮
+</pre></div>
+</div>
 <p>You will need a python script called Glean.py which is located in /fireball-begin/src. The script Glean.py will choose the best 5 cutoff values from the Z.eig file. Run the script by typing python Glean.py. If you need more information, add the - - help flag. When working with transition metals, you will need to add the flag –ignorep. From this list you will need to choose values such that the difference between the two cutoffs is approximately Δrc = 0.4aB (a general rule of thumb). The cutoffs need be chosen in a way that the energy difference between the energy eigenvalues of the free atom and the fireball atom is the same for all shells. If not, then the excitation energies for each shell will be raised in a way that will not preserve the chemical trends of the atoms. Glean.py will preserve the chemical ordering of the eigenvalues when executed.</p>
-<p>5.4 Calculating the wave-functions - begin.x</p>
+</div>
+<div class="section" id="calculating-the-wave-functions-begin-x">
+<h3>5.4 Calculating the wave-functions - begin.x<a class="headerlink" href="#calculating-the-wave-functions-begin-x" title="Permalink to this headline">¶</a></h3>
 <p>Before running begin.x two more files need to be created: begin.inp and N-begin.inp (where N is the atomic symbol). The template for each of these files are as follows,</p>
-<p>begin.inp
-James P. Lewis  ! Name of the person running begin.x
-N-begin.inp     ! Name of the input file for the species (list line by line; number of species)</p>
+<p>begin.inp</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>James P. Lewis  ! Name of the person running begin.x
+N-begin.inp     ! Name of the input file for the species (list line by line; number of species)
+</pre></div>
+</div>
 <p>So, in principle, begin.x can be run for more than one species.  To run for multiple species, merely change the number in the Fdata.inp file and add the appropriate pseudo-potential files to /Fdata/basis. If multiple species are calculated, then make a Z-begin.inp for each species, as follows:</p>
-<p>N-begin.inp
-Nitrogen        ! atom name
-N       ! atom symbol
-7       ! atomic number
-14.007  ! atomic mass
-5.0</p>
-<blockquote>
-<div>! number of valence electrons</div></blockquote>
-<dl class="docutils">
-<dt>3</dt>
-<dd>! exchange-correlation option</dd>
-</dl>
-<p>3       ! number of shells (add three lines for each shell)
-0</p>
-<blockquote>
-<div>! angular momentum of shell 1</div></blockquote>
-<dl class="docutils">
-<dt>2.0</dt>
-<dd>! number of electrons in shell 1</dd>
-<dt>3.80</dt>
-<dd>! radial cutoff for shell 1</dd>
-</dl>
-<p>1       ! angular momentum of shell 2
-3.0     ! number of electrons in shell 2
-4.45</p>
-<blockquote>
-<div>! radial cutoff for shell 2</div></blockquote>
-<p>2       ! angular momentum for shell 3 (this is an empty polarization state)
-0.0     ! number of electrons in shell 3
-4.45    ! radial cutoff for shell 3
-1       ! use excited states (do not include the &#8220;excited&#8221; lines if set to 0)
-2.0     ! number of valence electrons (excited)
-1.0     ! number of electrons in shell 1 (excited)
-2.0     ! number of electrons in shell 2 (excited)      (one line for each shell above)
-0.0</p>
-<blockquote>
-<div>! number of electrons in shell 3 (excited)</div></blockquote>
-<p>1       ! optimize basis set with confinement potential
-0.0     ! Vo for shell 1
-0.0     ! r0 for shell 1
-0.0     ! V0 for shell 2           (two parameters for each shell listed above)
-0.0     ! r0 for shell 2
-20.0    ! V0 for shell 3
-0.0     ! r0 for shell 3
-100.0</p>
-<blockquote>
-<div>! V0 for shell 1 (excited)</div></blockquote>
-<dl class="docutils">
-<dt>0.0</dt>
-<dd>! r0 for shell 1 (excited)</dd>
-</dl>
-<p>200.0   ! V0 for shell 2 (excited)
-0.0</p>
-<blockquote>
-<div>! r0 for shell 2 (excited)</div></blockquote>
-<dl class="docutils">
-<dt>0.0</dt>
-<dd>! V0 for shell 3 (excited)</dd>
-<dt>0.0</dt>
-<dd>! r0 for shell 3 (excited)</dd>
-</dl>
+<p>N-begin.inp</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Nitrogen  ! atom name
+N         ! atom symbol
+7         ! atomic number
+14.007    ! atomic mass
+5.0       ! number of valence electrons
+3         ! exchange-correlation option
+3         ! number of shells (add three lines for each shell)
+0         ! angular momentum of shell 1
+2.0       ! number of electrons in shell 1
+3.80      ! radial cutoff for shell 1
+1         ! angular momentum of shell 2
+3.0       ! number of electrons in shell 2
+4.45      ! radial cutoff for shell 2
+2         ! angular momentum for shell 3 (this is an empty polarization state)
+0.0       ! number of electrons in shell 3
+4.45      ! radial cutoff for shell 3
+1         ! use excited states (do not include the &quot;excited&quot; lines if set to 0)
+2.0       ! number of valence electrons (excited)
+1.0       ! number of electrons in shell 1 (excited)
+2.0       ! number of electrons in shell 2 (excited)      (one line for each shell above)
+0.0       ! number of electrons in shell 3 (excited)
+1         ! optimize basis set with confinement potential
+0.0       ! Vo for shell 1
+0.0       ! r0 for shell 1
+0.0       ! V0 for shell 2           (two parameters for each shell listed above)
+0.0       ! r0 for shell 2
+20.0      ! V0 for shell 3
+0.0       ! r0 for shell 3
+100.0     ! V0 for shell 1 (excited)
+0.0       ! r0 for shell 1 (excited)
+200.0     ! V0 for shell 2 (excited)
+0.0       ! r0 for shell 2 (excited)
+0.0       ! V0 for shell 3 (excited)
+0.0       ! r0 for shell 3 (excited)
+</pre></div>
+</div>
 <p>There are several output files for begin.x; first, the screen output will be stored in output.log. Second, a file for create.x will be automatically created for each atom included, for example, for nitrogen, N-create.inp will be a generated output file from begin.x. The Z-create.inp file is input file for create.x. In addition to this output, there will be output of the fireball wave-functions (e.g., 007_380.wf1), the neutral atom potential (e.g., 007_445.na0), and the Hartree potentials for each shell (e.g., 007_380.na1). This output will be stored in  /Fdata/basis. The files are named according to the parameters listed in the Z-begin.inp. The first number in the file nomenclature is the atomic number, the second number is the radial cutoff, so that 3.80 is represented by 380, and the suffix is the type of file (wf = wavefunction and na = Hartree potential). Hence, 007_380.na1 is the Hartree potential for the first shell (s-state) of nitrogen (007) with radial cutoff 3.80 (380).</p>
-<p>5.5 Excited states and polarization states</p>
+</div>
+<div class="section" id="excited-states-and-polarization-states">
+<h3>5.5 Excited states and polarization states<a class="headerlink" href="#excited-states-and-polarization-states" title="Permalink to this headline">¶</a></h3>
 <p>We follow the DMOL formalism for developing excited numerical states, as outlined in Ref. <a class="footnote-reference" href="#id22" id="id11">[10]</a>. This involves generating the wave-functions for the 2+ ion (or generally any + ion can be used) and then orthogonalizing the wave-functions of this ionized atom to the original ground state wave-functions. This algorithm is now fully automatic within the BEGIN module by choosing &#8216;1&#8217; in the line - &#8221;! use excited states&#8221;. Make certain that the pseudo-potential for the ionized atom is copied to the file Z++.pp (e.g., 007++.pp for the 2+ ion of nitrogen) in /Fdata/basis.</p>
 <p>Note that hydrogen is a special case when generating the DMOL basis set, because there is no such thing as a 2+ ion for the atom. Currently, the BEGIN module cannot do this for hydrogen, although one could just generate an excited wave-function of the ground state atom by just copying the 001.pp pseudo-potential file to the 001++.pp file; do not generate a separate pseudo-potential file.</p>
-<p>Polarization wavefunctions (for example, a d-state on nitrogen) can be easily generated by listing an extra shell (for example, in the case of nitrogen, by choosing &#8216;3&#8217;, rather than &#8216;2&#8217;, in the line - &#8221;! number of shells&#8221;).
-5.6 Optimized wave-functions</p>
+<p>Polarization wavefunctions (for example, a d-state on nitrogen) can be easily generated by listing an extra shell (for example, in the case of nitrogen, by choosing &#8216;3&#8217;, rather than &#8216;2&#8217;, in the line - &#8221;! number of shells&#8221;).</p>
+</div>
+<div class="section" id="optimized-wave-functions">
+<h3>5.6 Optimized wave-functions<a class="headerlink" href="#optimized-wave-functions" title="Permalink to this headline">¶</a></h3>
 <p>The code begin.x provides a way to generate an optimized state wave-function based on application of extra confinement potential. The confinement potential is defined as:</p>
-<p>For details, see Ref. <a class="footnote-reference" href="#id23" id="id12">[11]</a>.
-5.7 Plotting the results</p>
-<p>The output files are in a form that can be readily plotted. It is always wise to plot the wavefunctions to insure that they look reasonable and to avoid problems later. The data for plotting purposes are contained in the following files - sstate0, sstate1, pstate0, pstate1, ..., etc. for the wavefunctions and NA_plot, NA_splot, NAe_splot, NA_pplot, NAe_plot, ..., etc. for the neutral (charged) atom potentials. For the wavefunction files, the ’0’ signifies wavefunctions for the ground state and ’1’ signifies wavefunctions for the excited states. Similarly, the ’e’, i.e. NAe_splot, signifies that the file contains neutral (charged) atom data for the excited state.
-Acknowledgements
-This research was funded in part by: The University of Utah Center for the Simulation of Accidental Fires and Explosions (C-SAFE), funded by the Department of Energy, Lawrence Livermore National Laboratory, under subcontract B341493; Department of Energy, Basic Energy Sciences, grant No. DE-FG02-03ER46059; National Science Foundation, Information Technology Research, grant No. CHE-0326027.</p>
-<p>References:</p>
+<p>For details, see Ref. <a class="footnote-reference" href="#id23" id="id12">[11]</a>.</p>
+</div>
+<div class="section" id="plotting-the-results">
+<h3>5.7 Plotting the results<a class="headerlink" href="#plotting-the-results" title="Permalink to this headline">¶</a></h3>
+<p>The output files are in a form that can be readily plotted. It is always wise to plot the wavefunctions to insure that they look reasonable and to avoid problems later. The data for plotting purposes are contained in the following files - sstate0, sstate1, pstate0, pstate1, ..., etc. for the wavefunctions and NA_plot, NA_splot, NAe_splot, NA_pplot, NAe_plot, ..., etc. for the neutral (charged) atom potentials. For the wavefunction files, the ’0’ signifies wavefunctions for the ground state and ’1’ signifies wavefunctions for the excited states. Similarly, the ’e’, i.e. NAe_splot, signifies that the file contains neutral (charged) atom data for the excited state.</p>
+</div>
+<div class="section" id="acknowledgements">
+<h3>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h3>
+<p>This research was funded in part by: The University of Utah Center for the Simulation of Accidental Fires and Explosions (C-SAFE), funded by the Department of Energy, Lawrence Livermore National Laboratory, under subcontract B341493; Department of Energy, Basic Energy Sciences, grant No. DE-FG02-03ER46059; National Science Foundation, Information Technology Research, grant No. CHE-0326027.</p>
+</div>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
 <table class="docutils footnote" frame="void" id="id13" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
@@ -479,10 +515,12 @@ This research was funded in part by: The University of Utah Center for the Simul
 <tr><td class="label"><a class="fn-backref" href="#id12">[11]</a></td><td>M.A. Basanta, Y.J. Dappe, P. Jelínek, and J. Ortega. &#8220;Optimized atomic-like orbitals for first-principles tight-binding molecular dynamics,&#8221; Comp. Mat. Sci., 39, 759–766 (2007).</td></tr>
 </tbody>
 </table>
-<p>The driver _Begin_ is compose of two executables <code class="docutils literal"><span class="pre">begin.x</span></code> and <code class="docutils literal"><span class="pre">begin-looprc</span></code>.
+<p>The <em>Begin</em> driver is composed of two executables <code class="docutils literal"><span class="pre">begin.x</span></code> and <code class="docutils literal"><span class="pre">begin-looprc</span></code>.
 The purpose of the driver is to compute the atomic wave-functions that will be
 used by the driver Create to compute the interatomic interactions and by the
 driver Fireball to compute the electronic structure.</p>
+</div>
+</div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 </div>

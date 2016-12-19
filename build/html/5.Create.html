@@ -90,10 +90,24 @@
 <li class="toctree-l1"><a class="reference internal" href="3.QuickStart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="4.Begin.html">Driver: Begin</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Driver: Create</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tutorials">Tutorials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#technical-information">Technical information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">4 Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pre-computing-the-interactions">4.1 Pre-computing the interactions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parallel-scalability">4.2 Parallel scalability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#three-center-interactions">4.3 Three-center interactions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-create-program">5 Running the CREATE Program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#some-notes-about-exchange-correlation">5.0   Some notes about exchange-correlation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-executables">5.1 Building the executables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-started-setting-up-the-input-and-output-sub-directories">5.2 Getting started - setting up the input and output sub-directories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#technical-information">Technical information</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="6.Fireball.html">Driver: Fireball</a></li>
@@ -145,24 +159,147 @@
             
   <div class="section" id="driver-create">
 <h1>Driver: Create<a class="headerlink" href="#driver-create" title="Permalink to this headline">¶</a></h1>
-<p>The driver _Create_ is compose of one executable <code class="docutils literal"><span class="pre">create.x</span></code>.
+<div class="section" id="introduction">
+<h2>4 Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pre-computing-the-interactions">
+<h3>4.1 Pre-computing the interactions<a class="headerlink" href="#pre-computing-the-interactions" title="Permalink to this headline">¶</a></h3>
+<p>For a full theoretical discussion of the multi-center interactions created within FIREBALL see Ref. <a class="footnote-reference" href="#id2" id="id1">[1]</a> and references therein.
+Given any two atomic orbitals, i and j, beyond some cutoff interaction distance (<span class="math">\(r_{ci}\)</span> + <span class="math">\(r_{cj}\)</span>) the matrix elements <span class="math">\(H_{ij}\)</span> and <span class="math">\(S_{ij}\)</span> become exactly zero; for example, an overlap matrix element of two s-orbitals is demonstrated in Fig. 1. As a result of these cutoff distances, there is only a prescribed interaction range over which the integrals need be evaluated; outside of the cutoff distance all interactions are exactly zero (except long-range coulomb). It’s worthwhile to mention, in the case of pseudopotential integrals, it is used different cutoff radius <span class="math">\(r_{c}^{PP}\)</span> related to pseudoatomic wavefunction <span class="math">\(\Psi^{NL}\)</span>. Then the pseudopotential integrals become exactly zero beyond certain distance (<span class="math">\(r_{ci}\)</span> + <span class="math">\(r_{cj}^{PP}\)</span>).</p>
+<div class="align-center figure" id="id3">
+<img alt="Schematic of the two-center interaction" src="_images/range.png" />
+<p class="caption"><span class="caption-text">Figure 1. The two-center interaction: due to cutoffs (rc) used in the method, the interaction range (d) of two s-orbitals, shown here, is non-zero only within some finite range.</span></p>
+</div>
+<p>Within the FIREBALL approach, all integrals may be pre-computed on a numerical grid and the specific values needed are gleaned from the tabulated values via interpolation. With this approach, interactions calculated within the CREATE module will be readily available. For two-center interactions, a cubic spline function is chosen as the interpolation method, so as to maximize numerical stability. Because these integral tables depend only on the atom type, their rc values, and the type of DFT exchange-correlation functional chosen, the integral tables only need to be generated once, for a given set of atomic species. As long as the criteria chosen for generating the data files does not change (such as choosing a different exchange-correlation functional), the data files may be used over and over again, saving overall computation time.</p>
+<p>The other two traditional approaches to integral evaluation were rejected for efficiency reasons. Within the “conventional” approach employed, such as the algorithms implemented in gas-phase electronic-structure codes, integrals are evaluated once per geometry and stored to disk for use during the SCF procedure. This approach results in extensive disk I/O and computation. The “direct” approach in which integrals are calculated as needed is similar to the approach taken within FIREBALL. Given the large computational cost of calculating each individual integral (because the integrals are evaluated numerically), the evaluation of different matrix element components are performed via interpolation within FIREBALL, rather than via explicit evaluation of the integral as done in the gas-phase direct approach.</p>
+</div>
+<div class="section" id="parallel-scalability">
+<h3>4.2 Parallel scalability<a class="headerlink" href="#parallel-scalability" title="Permalink to this headline">¶</a></h3>
+<p>The generation process for the atomic interactions lends itself to easy parallelization by spreading the data file creation over multiple processors based on differing integral types. Within the CREATE module, integrals are distributed to different processors based upon atomic number and based upon integral type (kinetic, overlap, exchange-correlation, etc.). The simple loop based approach is used for distributing work to processors and has been found to be very effective. This approach minimizes communication while distributing work evenly across the processors. This parallelization scheme is particularly important, since the number of data files needed grows as O(M3) with the number of different atomic species M.</p>
+</div>
+<div class="section" id="three-center-interactions">
+<h3>4.3 Three-center interactions<a class="headerlink" href="#three-center-interactions" title="Permalink to this headline">¶</a></h3>
+<p>The three-center interactions are calculated according to a bond-charge scheme; the three-centers define the π - σ plane (see Fig. 2). The σ axis is the axis connecting the two orbitals μ and ν forming the bond charge, and the origin is midway between the two orbitals. The origin lies at the bond-charge center, equidistant from the two atoms forming the bond charge. The bond charge interaction, defined by the bond-charge distance (dBC), is non-zero only in the region of intersection of the two spheres of radius rc. The non-zero three-center integrals are written in the following form:</p>
+<div class="math">
+\[V_{\mu\nu}(d, d_{BC}, \theta) = \langle \phi_{\mu}^{PAO} (\vec{r} + \frac{1}{2} d_{BC} \sigma |V(\vec{r} - \vec{d})| \psi^{PAO} (\vec{r} - \frac{1}{2}d_{BC} \sigma)) \rangle\]</div>
+<p>The kernel is expanded in associated Legendre polynomials P nm(cos <span class="math">\(\theta\)</span>) in the standard way. We truncate the series after n = 4, so for each relevant value of <span class="math">\((\mu, \nu)\)</span> we have at most five functions, <span class="math">\(q_0, q_1, q_2, q_3,\)</span> and <span class="math">\(q_4\)</span>. Each value of n is stored in a separate data file (see Sec. 6). For fixed d and <span class="math">\(d_{BC}\)</span>, <span class="math">\(\theta\)</span> is varied over five angles and the interactions are evaluated exactly by performing a three-dimensional integral. We choose the following five angles: <span class="math">\(cos \theta = 0,  \sqrt{3}, -\sqrt{3}, \sqrt{3/5},\)</span> and <span class="math">\(-\sqrt{3/5}\)</span>. The five functions <span class="math">\(q_n\)</span> at the chosen value of d and <span class="math">\(d_{BC}\)</span> are determined from five equations in five unknowns. The process is repeated over a grid of values of d and <span class="math">\(d_{BC}\)</span> up to <span class="math">\(r_{ci} + r_{cj}\)</span>. Past <span class="math">\(r_{ci} + r_{cj}\)</span>, the matrix elements must be identically zero.</p>
+<div class="align-center figure" id="id4">
+<img alt="Schematic of the three-center interaction" src="_images/create10x.png" />
+<p class="caption"><span class="caption-text">Figure 2. The three-center interaction. The bond-charge (<span class="math">\(d_{BC}\)</span>) defines the distance between the first two-centers(centers can be defined as wavefunctions or potentials, such that we are calculating matrix elements , and the three-center interaction is non-zero only within some finite range defined by <span class="math">\(d_{BC} &lt; r_{ci} + r_{cj}\)</span>. The third center (at <span class="math">\(V_{NA}\)</span> shown) is defined by the angle, <span class="math">\(\theta\)</span>, and the distance, <span class="math">\(d\)</span>, from the center of the bond charge distance.</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="running-the-create-program">
+<h2>5 Running the CREATE Program<a class="headerlink" href="#running-the-create-program" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="some-notes-about-exchange-correlation">
+<h3>5.0   Some notes about exchange-correlation<a class="headerlink" href="#some-notes-about-exchange-correlation" title="Permalink to this headline">¶</a></h3>
+<p>Table 1↓ lists the different exchange-correlation options; note that only option &#8216;3&#8217; and option &#8216;9&#8217; are currently programmed within the FIREBALL suite of codes.
+Table 1 Enumeration of exchange-correlation approximations.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="9%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" colspan="3">Enumeration of exchange-correlation approximations.</th>
+</tr>
+<tr class="row-even"><th class="head">Number</th>
+<th class="head">Limit</th>
+<th class="head">Exchange-Correlation Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td>1</td>
+<td>LDA</td>
+<td>Wigner</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>LDA</td>
+<td>Hedin/Lundqvist</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>LDA</td>
+<td>Ceperley/Alder Perdew/Zunger (1980)</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>GGA</td>
+<td>Perdew/Wang (1991)</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>GGA</td>
+<td>Becke (1988) X, Perdew (1986)</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>GGA</td>
+<td>Perdew/Burke/Ernzerhof (1996)</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>LDA</td>
+<td>Zhao/Parr</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>LDA</td>
+<td>Ceperley/Alder Perdew/Wang (1991)</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>GGA</td>
+<td>Becke (1988) X, Lee/Yang/Parr (1988)</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>GGA</td>
+<td>Perdew/Wang (1991) X, Lee/Yang/Parr (1988)</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>LSDA</td>
+<td>Volko/Wilk/Nusair (1980)</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>B3LYP</td>
+<td>BLYP (9 GGA) with exact exchange</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="building-the-executables">
+<h3>5.1 Building the executables<a class="headerlink" href="#building-the-executables" title="Permalink to this headline">¶</a></h3>
+<p>All packages are stored in the svn repository: <a class="reference external" href="https://fireball.phys.wvu.edu/svn/THUNDER">https://fireball.phys.wvu.edu/svn/THUNDER</a> (you will need a user account on our server to download). There are two sub-directory downloads that are needed to successfully run create.x; these are /fireball-thunder and /fireball-create. Checkout these two sub-directories from the svn repository. Note that all the modules for running the new suite of FIREBALL codes are found in /fireball-thunder/src. Generally, only the drivers are found in other sub-directories and symbolic links are made to /fireball-thunder/src sub-directories. This strategy is chosen so that all FIREBALL codes will now utilize common modules throughout future versions.</p>
+<p>After checking out /fireball-thunder and /fireball-create - go to /fireball-create/src and type ./runme_before_compile.sh - after which you can type make create.x to create the executable. Note that there is a single common Makefile for creating all FIREBALL codes.  Finally, before typing make, make sure that the correct MACHINE file is chosen in the Makefile (you may need to build your own MACHINE file). Also, in the Makefile - choose the correct XC (exchange-correlation) flag (currently the two flags available are XC = LDA for exchange-correlation option 3 and and XC = BLYP for exchange-correlation option 9).</p>
+</div>
+<div class="section" id="getting-started-setting-up-the-input-and-output-sub-directories">
+<h3>5.2 Getting started - setting up the input and output sub-directories<a class="headerlink" href="#getting-started-setting-up-the-input-and-output-sub-directories" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="acknowledgements">
+<h3>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h3>
+<p>This research was funded in part by: The University of Utah Center for the Simulation of Accidental Fires and Explosions (C-SAFE), funded by the Department of Energy, Lawrence Livermore National Laboratory, under subcontract B341493; Department of Energy, Basic Energy Sciences, grant No. DE-FG02-03ER46059; National Science Foundation, Information Technology Research, grant No. CHE-0326027.</p>
+</div>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>J.P. Lewis, P. Jelínek, J. Ortega, A.A. Demkov, D.G. Trabada, B. Haycock, H. Wang, G. Adams, J.K. Tomfohr, E. Abad, H. Wang, and D.A. Drabold. “Advances and applications in the FIREBALL ab-initio tight-binding molecular-dynamics formalism,” Phys. Stat. Sol. B., 248, 1989-2007 (2011).</td></tr>
+</tbody>
+</table>
+<p>The <em>Create</em> driver is compose of one executable <code class="docutils literal"><span class="pre">create.x</span></code>.
 The purpose of the driver is to compute the interatomic interactions up to three
 centers.
 The interactions are stored in the Fdata directory (old style) or the new HDF5
 Fdata.hdf (new style).
 The driver works with the wave-functions created by the driver Begin and will be
 used by the driver Fireball to compute the electronic structure.</p>
+</div>
 <div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="tutorials">
-<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
+<h3>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="technical-information">
-<h2>Technical information<a class="headerlink" href="#technical-information" title="Permalink to this headline">¶</a></h2>
+<h3>Technical information<a class="headerlink" href="#technical-information" title="Permalink to this headline">¶</a></h3>
+</div>
 </div>
 </div>
 
